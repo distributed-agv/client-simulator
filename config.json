@@ -1,0 +1,27 @@
+{
+    "redis_addr": {
+        "host": "127.0.0.1",
+        "port": 6379
+    },
+    "server_addrs": [
+        {
+            "host": "127.0.0.1",
+            "port": 50051
+        }
+    ],
+    "row_num": 5,
+    "col_num": 5,
+    "t_avg": 5,
+    "t_std": 1,
+    "duration": 60,
+    "car_props": [
+        {
+            "src_pos": [0, 0],
+            "dst_pos": [4, 4]
+        },
+        {
+            "src_pos": [0, 4],
+            "dst_pos": [4, 0]
+        }
+    ]
+}
