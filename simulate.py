@@ -22,7 +22,8 @@ class Car:
         self.t_std = t_std
 
     def move(self, step_code):
-        time.sleep(random.gauss(self.t_avg, self.t_std))
+        if step_code != 0:
+            time.sleep(random.gauss(self.t_avg, self.t_std))
         self.seq += 1
         self.last_pos = self.cur_pos
         offset = OFFSETS[step_code]
@@ -77,7 +78,7 @@ class ClientProcess(multiprocessing.Process):
         server_addr = random.choice(self.server_addrs)
         stub = make_stub(server_addr)
         while True:
-            log('Info', f'car_id={self.car.car_id}, pos={self.car.cur_pos}')
+            log('Info', str(self.car.cur_pos))
             car_state = make_car_state(self.car)
             step = get_next_step(stub, car_state)
             car.move(step.step_code)
