@@ -11,9 +11,12 @@
     ],
     "row_num": 5,
     "col_num": 5,
-    "t_avg": 5,
-    "t_std": 1,
-    "duration": 60,
+    "t_move_avg": 0.5,
+    "t_move_std": 0.1,
+    "t_retry_base": 1,
+    "t_retry_ai": 1,
+    "t_retry_md": 2,
+    "duration": 600,
     "car_props": [
         {
             "src_pos": [0, 0],

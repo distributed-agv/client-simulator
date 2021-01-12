@@ -11,19 +11,19 @@ OFFSETS = [(0, 0), (0, -1), (0, 1), (1, 0), (-1, 0)]
 
 
 class Car:
-    def __init__(self, car_id, src_pos, dst_pos, t_avg, t_std):
+    def __init__(self, car_id, src_pos, dst_pos, t_move_avg, t_move_std):
         self.car_id = car_id
         self.seq = 0
         self.src_pos = src_pos
         self.dst_pos = dst_pos
         self.cur_pos = src_pos
         self.last_pos = src_pos
-        self.t_avg = t_avg
-        self.t_std = t_std
+        self.t_move_avg = t_move_avg
+        self.t_move_std = t_move_std
 
     def move(self, step_code):
         if step_code != 0:
-            time.sleep(random.gauss(self.t_avg, self.t_std))
+            time.sleep(random.gauss(self.t_move_avg, self.t_move_std))
         self.seq += 1
         self.last_pos = self.cur_pos
         offset = OFFSETS[step_code]
@@ -40,11 +40,15 @@ class Car:
 
 
 class ClientProcess(multiprocessing.Process):
-    def __init__(self, car, server_addrs, log_filename):
+    def __init__(self, car, server_addrs, t_retry_base, t_retry_ai, t_retry_md, log_filename):
         super(ClientProcess, self).__init__()
         self.car = car
         self.server_addrs = server_addrs
         self.log_filename = log_filename
+        self.t_retry_base = t_retry_base
+        self.t_retry = t_retry_base
+        self.t_retry_ai = t_retry_ai
+        self.t_retry_md = t_retry_md
 
     def run(self):
         log_file = open(self.log_filename, 'w')
@@ -78,9 +82,13 @@ class ClientProcess(multiprocessing.Process):
         def get_next_step(stub, car_state):
             while True:
                 try:
-                    return stub.GetNextStep(car_state)
+                    step = stub.GetNextStep(car_state)
+                    self.t_retry = max(self.t_retry - self.t_retry_ai, self.t_retry_base)
+                    return step
                 except grpc.RpcError as err:
                     log('Error', err.details())
+                    time.sleep(self.t_retry)
+                    self.t_retry *= self.t_retry_md
 
         server_addr = random.choice(self.server_addrs)
         stub = make_stub(server_addr)
@@ -108,10 +116,17 @@ if __name__ == '__main__':
             car_id,
             tuple(car_prop['src_pos']),
             tuple(car_prop['dst_pos']),
-            config['t_avg'],
-            config['t_std'],
+            config['t_move_avg'],
+            config['t_move_std'],
         )
-        client_process = ClientProcess(car, config['server_addrs'], f'logs/client{car_id}.log')
+        client_process = ClientProcess(
+            car,
+            config['server_addrs'],
+            config['t_retry_base'],
+            config['t_retry_ai'],
+            config['t_retry_md'],
+            f'logs/client{car_id}.log'
+        )
         client_processes.append(client_process)
         client_process.start()
     
