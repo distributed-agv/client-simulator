@@ -84,17 +84,19 @@ class ClientProcess(multiprocessing.Process):
 
         server_addr = random.choice(self.server_addrs)
         stub = make_stub(server_addr)
-        log('Info', str(self.car.cur_pos))
+        log('Info', f'Arrive at {self.car.cur_pos}')
         while True:
             car_state = make_car_state(self.car)
             step = get_next_step(stub, car_state)
             if step.step_code < 0:
+                log('Info', f'Get nonce {step.step_code}')
                 car.enter_recovery_mode(step.step_code)
             elif step.step_code == 5:
                 car.reset()
+                log('Info', 'Reset')
             else:
                 car.move(step.step_code)
-                log('Info', str(self.car.cur_pos))
+                log('Info', f'Arrive at {self.car.cur_pos}')
 
 
 if __name__ == '__main__':

@@ -9,10 +9,10 @@ def get_pos_log(log_file):
     result = []
     for line in log_file.readlines():
         tokens = line.split()
-        if tokens[0] != '[Info]':
+        if tokens[0] != '[Info]' or tokens[3] != 'Arrive':
             continue
         dt = datetime.datetime.strptime(f'{tokens[1]} {tokens[2]}', '%Y-%m-%d %H:%M:%S.%f')
-        pos = ast.literal_eval(f'{tokens[3]} {tokens[4]}')
+        pos = ast.literal_eval(f'{tokens[5]} {tokens[6]}')
         result.append((dt, pos))
     return result
 
