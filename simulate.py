@@ -31,6 +31,13 @@ class Car:
         if self.cur_pos == self.dst_pos:
             self.src_pos, self.dst_pos = self.dst_pos, self.src_pos
 
+    def reset(self):
+        self.seq = 0
+        self.last_pos = self.cur_pos
+
+    def enter_recovery_mode(self, nonce):
+        self.seq = nonce
+
 
 class ClientProcess(multiprocessing.Process):
     def __init__(self, car, server_addrs, log_filename):
@@ -77,11 +84,17 @@ class ClientProcess(multiprocessing.Process):
 
         server_addr = random.choice(self.server_addrs)
         stub = make_stub(server_addr)
+        log('Info', str(self.car.cur_pos))
         while True:
-            log('Info', str(self.car.cur_pos))
             car_state = make_car_state(self.car)
             step = get_next_step(stub, car_state)
-            car.move(step.step_code)
+            if step.step_code < 0:
+                car.enter_recovery_mode(step.step_code)
+            elif step.step_code == 5:
+                car.reset()
+            else:
+                car.move(step.step_code)
+                log('Info', str(self.car.cur_pos))
 
 
 if __name__ == '__main__':
