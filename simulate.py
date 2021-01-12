@@ -38,9 +38,13 @@ class Car:
     def enter_recovery_mode(self, nonce):
         self.seq = nonce
 
+    def in_recovery_mode(self):
+        return self.seq < 0
+
 
 class ClientProcess(multiprocessing.Process):
-    def __init__(self, car, server_addrs, t_retry_base, t_retry_ai, t_retry_md, log_filename):
+    def __init__(self, car, server_addrs, t_retry_base, t_retry_ai, t_retry_md,
+                 t_recover_avg, t_recover_std, log_filename):
         super(ClientProcess, self).__init__()
         self.car = car
         self.server_addrs = server_addrs
@@ -49,6 +53,8 @@ class ClientProcess(multiprocessing.Process):
         self.t_retry = t_retry_base
         self.t_retry_ai = t_retry_ai
         self.t_retry_md = t_retry_md
+        self.t_recover_avg = t_recover_avg
+        self.t_recover_std = t_recover_std
 
     def run(self):
         log_file = open(self.log_filename, 'w')
@@ -96,6 +102,8 @@ class ClientProcess(multiprocessing.Process):
         while True:
             car_state = make_car_state(self.car)
             step = get_next_step(stub, car_state)
+            if self.car.in_recovery_mode():
+                time.sleep(random.gauss(self.t_recover_avg, self.t_recover_std))
             if step.step_code < 0:
                 log('Info', f'Get nonce {step.step_code}')
                 self.car.enter_recovery_mode(step.step_code)
@@ -125,6 +133,8 @@ if __name__ == '__main__':
             config['t_retry_base'],
             config['t_retry_ai'],
             config['t_retry_md'],
+            config['t_recover_avg'],
+            config['t_recover_std'],
             f'logs/client{car_id}.log'
         )
         client_processes.append(client_process)

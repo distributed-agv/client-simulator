@@ -16,6 +16,8 @@
     "t_retry_base": 1,
     "t_retry_ai": 1,
     "t_retry_md": 2,
+    "t_recover_avg": 1,
+    "t_recover_std": 0.2,
     "duration": 600,
     "car_props": [
         {
