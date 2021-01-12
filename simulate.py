@@ -98,12 +98,12 @@ class ClientProcess(multiprocessing.Process):
             step = get_next_step(stub, car_state)
             if step.step_code < 0:
                 log('Info', f'Get nonce {step.step_code}')
-                car.enter_recovery_mode(step.step_code)
+                self.car.enter_recovery_mode(step.step_code)
             elif step.step_code == 5:
-                car.reset()
+                self.car.reset()
                 log('Info', 'Reset')
             else:
-                car.move(step.step_code)
+                self.car.move(step.step_code)
                 log('Info', f'Arrive at {self.car.cur_pos}')
 
 
