@@ -13,6 +13,7 @@
     "col_num": 5,
     "t_move_avg": 0.5,
     "t_move_std": 0.1,
+    "t_stop": 1,
     "t_retry_base": 1,
     "t_retry_ai": 1,
     "t_retry_md": 2,

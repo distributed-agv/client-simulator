@@ -11,7 +11,7 @@ OFFSETS = [(0, 0), (0, -1), (0, 1), (1, 0), (-1, 0)]
 
 
 class Car:
-    def __init__(self, car_id, src_pos, dst_pos, t_move_avg, t_move_std):
+    def __init__(self, car_id, src_pos, dst_pos, t_move_avg, t_move_std, t_stop):
         self.car_id = car_id
         self.seq = 0
         self.src_pos = src_pos
@@ -20,10 +20,13 @@ class Car:
         self.last_pos = src_pos
         self.t_move_avg = t_move_avg
         self.t_move_std = t_move_std
+        self.t_stop = t_stop
 
     def move(self, step_code):
         if step_code != 0:
             time.sleep(random.gauss(self.t_move_avg, self.t_move_std))
+        else:
+            time.sleep(self.t_stop)
         self.seq += 1
         self.last_pos = self.cur_pos
         offset = OFFSETS[step_code]
@@ -126,6 +129,7 @@ if __name__ == '__main__':
             tuple(car_prop['dst_pos']),
             config['t_move_avg'],
             config['t_move_std'],
+            config['t_stop'],
         )
         client_process = ClientProcess(
             car,
