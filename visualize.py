@@ -1,51 +1,60 @@
 import json
-import datetime
-import ast
+import log_parser
 import matplotlib.pyplot as plt
 import matplotlib.animation as ani
 
 
-def get_pos_log(log_file):
-    result = []
-    for line in log_file.readlines():
-        tokens = line.split()
-        if tokens[0] != '[Info]' or tokens[3] != 'Arrive':
-            continue
-        dt = datetime.datetime.strptime(f'{tokens[1]} {tokens[2]}', '%Y-%m-%d %H:%M:%S.%f')
-        pos = ast.literal_eval(f'{tokens[5]} {tokens[6]}')
-        result.append((dt, pos))
-    return result
-
-
 if __name__ == '__main__':
     config = json.load(open('config.json', 'r'))
-    car_num = len(config['car_props'])
+    row_num = config['row_num']
+    col_num = config['col_num']
+    car_tasks = config['car_tasks']
+    car_num = len(car_tasks)
 
-    pos_log_entries = [
-        (car_id, *entry)
+    frames = [
+        (car_id, log_entry)
         for car_id in range(car_num)
-        for entry in get_pos_log(open(f'logs/client{car_id}.log', 'r'))
+        for log_entry in log_parser.parse_log(f'logs/client{car_id}.log')
     ]
-    pos_log_entries.sort(key=lambda entry: entry[1])
+    frames.sort(key=lambda frame: frame[1].dt)
 
     fig, ax = plt.subplots()
-    ax.axis([-1, config['row_num'], -1, config['col_num']])
+    ax.axis([-1, col_num, -1, row_num])
     
-    texts = [
-        ax.text(car_prop['src_pos'][1], car_prop['src_pos'][0], str(car_id), color='r')
-        for car_id, car_prop in enumerate(config['car_props'])
+    for row_idx in range(row_num):
+        ax.plot([0, col_num - 1], [row_idx, row_idx], color='black')
+    for col_idx in range(col_num):
+        ax.plot([col_idx, col_idx], [0, row_num - 1], color='black')
+    
+    annoations = [
+        ax.annotate(
+            str(car_id),
+            car_task['src_pos'][::-1],
+            bbox={
+                'boxstyle': 'circle',
+                'facecolor': 'white',
+                'edgecolor': 'red',
+            },
+            ha='center',
+            va='center',
+        )
+        for car_id, car_task in enumerate(car_tasks)
     ]
 
-    def update(entry):
-        texts[entry[0]].set_x(entry[2][1])
-        texts[entry[0]].set_y(entry[2][0])
-        if entry[2] == tuple(config['car_props'][entry[0]]['src_pos']) or \
-                entry[2] == tuple(config['car_props'][entry[0]]['dst_pos']):
-            texts[entry[0]].set_color('r')
-        else:
-            texts[entry[0]].set_color('b')
-        return [texts[entry[0]]]
+    def update(frame):
+        if isinstance(frame[1], log_parser.ArriveEntry):
+            annoations[frame[0]].set_x(frame[1].pos[1])
+            annoations[frame[0]].set_y(frame[1].pos[0])
+            if frame[1].pos == tuple(car_tasks[frame[0]]['src_pos']) or \
+                frame[1].pos == tuple(car_tasks[frame[0]]['dst_pos']):
+                annoations[frame[0]].set_color('red')
+                annoations[frame[0]].get_bbox_patch().set_edgecolor('red')
+            else:
+                annoations[frame[0]].set_color('black')
+                annoations[frame[0]].get_bbox_patch().set_edgecolor('black')
+        return annoations
 
-    animation = ani.FuncAnimation(fig, update, frames=pos_log_entries, interval=800)
+    animation = ani.FuncAnimation(fig, update, frames=frames)
 
+    plt.gca().set_aspect('equal')
     plt.show()

@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x0bguide.proto\"\xc5\x01\n\x08\x43\x61rState\x12\x0e\n\x06\x63\x61r_id\x18\x01 \x01(\x05\x12\x0b\n\x03seq\x18\x02 \x01(\x05\x12#\n\x07\x63ur_pos\x18\x03 \x01(\x0b\x32\x12.CarState.Position\x12$\n\x08last_pos\x18\x04 \x01(\x0b\x32\x12.CarState.Position\x12#\n\x07\x64st_pos\x18\x05 \x01(\x0b\x32\x12.CarState.Position\x1a,\n\x08Position\x12\x0f\n\x07row_idx\x18\x01 \x01(\x05\x12\x0f\n\x07\x63ol_idx\x18\x02 \x01(\x05\"o\n\x04Step\x12!\n\tstep_code\x18\x01 \x01(\x0e\x32\x0e.Step.StepCode\"D\n\x08StepCode\x12\x08\n\x04STOP\x10\x00\x12\x08\n\x04LEFT\x10\x01\x12\t\n\x05RIGHT\x10\x02\x12\x0b\n\x07\x46ORWARD\x10\x03\x12\x0c\n\x08\x42\x41\x43KWARD\x10\x04\x32*\n\x05Guide\x12!\n\x0bGetNextStep\x12\t.CarState\x1a\x05.Step\"\x00\x62\x06proto3'
+  serialized_pb=b'\n\x0bguide.proto\"\xc5\x01\n\x08\x43\x61rState\x12\x0e\n\x06\x63\x61r_id\x18\x01 \x01(\x05\x12\x0b\n\x03seq\x18\x02 \x01(\x05\x12#\n\x07\x63ur_pos\x18\x03 \x01(\x0b\x32\x12.CarState.Position\x12$\n\x08last_pos\x18\x04 \x01(\x0b\x32\x12.CarState.Position\x12#\n\x07\x64st_pos\x18\x05 \x01(\x0b\x32\x12.CarState.Position\x1a,\n\x08Position\x12\x0f\n\x07row_idx\x18\x01 \x01(\x05\x12\x0f\n\x07\x63ol_idx\x18\x02 \x01(\x05\"z\n\x04Step\x12!\n\tstep_code\x18\x01 \x01(\x0e\x32\x0e.Step.StepCode\"O\n\x08StepCode\x12\x08\n\x04STOP\x10\x00\x12\x08\n\x04LEFT\x10\x01\x12\t\n\x05RIGHT\x10\x02\x12\x0b\n\x07\x46ORWARD\x10\x03\x12\x0c\n\x08\x42\x41\x43KWARD\x10\x04\x12\t\n\x05RESET\x10\x05\x32*\n\x05Guide\x12!\n\x0bGetNextStep\x12\t.CarState\x1a\x05.Step\"\x00\x62\x06proto3'
 )
 
 
@@ -56,11 +56,16 @@ _STEP_STEPCODE = _descriptor.EnumDescriptor(
       serialized_options=None,
       type=None,
       create_key=_descriptor._internal_create_key),
+    _descriptor.EnumValueDescriptor(
+      name='RESET', index=5, number=5,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
   ],
   containing_type=None,
   serialized_options=None,
   serialized_start=258,
-  serialized_end=326,
+  serialized_end=337,
 )
 _sym_db.RegisterEnumDescriptor(_STEP_STEPCODE)
 
@@ -192,7 +197,7 @@ _STEP = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=215,
-  serialized_end=326,
+  serialized_end=337,
 )
 
 _CARSTATE_POSITION.containing_type = _CARSTATE
@@ -236,8 +241,8 @@ _GUIDE = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=328,
-  serialized_end=370,
+  serialized_start=339,
+  serialized_end=381,
   methods=[
   _descriptor.MethodDescriptor(
     name='GetNextStep',

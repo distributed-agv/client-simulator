@@ -1,33 +1,32 @@
 {
-    "redis_addr": {
-        "host": "127.0.0.1",
-        "port": 6379
+  "server_addrs": [
+    {
+      "host": "127.0.0.1",
+      "port": 50051
+    }
+  ],
+  "redis_addr": {
+    "host": "127.0.0.1",
+    "port": 6379
+  },
+  "row_num": 5,
+  "col_num": 5,
+  "car_tasks": [
+    {
+      "src_pos": [0, 0],
+      "dst_pos": [4, 4]
     },
-    "server_addrs": [
-        {
-            "host": "127.0.0.1",
-            "port": 50051
-        }
-    ],
-    "row_num": 5,
-    "col_num": 5,
-    "t_move_avg": 0.5,
-    "t_move_std": 0.1,
-    "t_stop": 1,
-    "t_retry_base": 1,
-    "t_retry_ai": 1,
-    "t_retry_md": 2,
-    "t_recover_avg": 1,
-    "t_recover_std": 0.2,
-    "duration": 600,
-    "car_props": [
-        {
-            "src_pos": [0, 0],
-            "dst_pos": [4, 4]
-        },
-        {
-            "src_pos": [0, 4],
-            "dst_pos": [4, 0]
-        }
-    ]
+    {
+      "src_pos": [0, 4],
+      "dst_pos": [4, 0]
+    }
+  ],
+  "t_move_avg": 1,
+  "t_move_std": 0.2,
+  "t_retry_min": 1,
+  "t_retry_max": 16,
+  "t_retry_mul": 2,
+  "t_stop": 1,
+  "t_recover": 1,
+  "duration": 60
 }
