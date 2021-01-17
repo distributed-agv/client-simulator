@@ -6,6 +6,7 @@ import time
 import multiprocessing
 import json
 import datetime
+import subprocess
 
 OFFSETS = [(0, 0), (0, -1), (0, 1), (1, 0), (-1, 0)]
 
@@ -95,14 +96,16 @@ class ClientProcess(multiprocessing.Process):
                 self.last_pos = self.cur_pos
                 log(' Info', '< Reset>')
             else:
+                offset = OFFSETS[step.step_code]
+                next_pos = (self.cur_pos[0] + offset[0], self.cur_pos[1] + offset[1])
                 if step.step_code == guide_pb2.Step.StepCode.STOP:
                     time.sleep(self.t_stop)
                 else:
+                    log(' Info', f'<  Move> {self.cur_pos} {next_pos}')
                     self.car.move(step.step_code)
                 self.seq += 1
                 self.last_pos = self.cur_pos
-                offset = OFFSETS[step.step_code]
-                self.cur_pos = (self.cur_pos[0] + offset[0], self.cur_pos[1] + offset[1])
+                self.cur_pos = next_pos
                 if self.cur_pos == self.dst_pos:
                     self.src_pos, self.dst_pos = self.dst_pos, self.src_pos                    
                 log(' Info', f'<Arrive> {self.cur_pos}')
@@ -141,8 +144,11 @@ if __name__ == '__main__':
         for car_id, car_task in enumerate(car_tasks)
     ]
 
-    for client_process in client_processes:
+    locator = subprocess.Popen(['python3', 'locator.py'])
+    for car_id, client_process in enumerate(client_processes):
         client_process.start()
+        print(f'Client {car_id}\'s PID: {client_process.pid}')
     time.sleep(duration)
     for client_process in client_processes:
-        client_process.kill()
+        client_process.terminate()
+    locator.terminate()

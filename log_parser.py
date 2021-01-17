@@ -25,6 +25,13 @@ class ArriveEntry(InfoEntry):
         self.pos = pos
 
 
+class MoveEntry(InfoEntry):
+    def __init__(self, dt, from_pos, to_pos):
+        super(MoveEntry, self).__init__(dt)
+        self.from_pos = from_pos
+        self.to_pos = to_pos
+
+
 class NonceEntry(InfoEntry):
     def __init__(self, dt, nonce):
         super(NonceEntry, self).__init__(dt)
@@ -46,6 +53,10 @@ def parse_log(filename):
             if tokens[3] == '<Arrive>':
                 pos = ast.literal_eval(f'{tokens[4]} {tokens[5]}')
                 result.append(ArriveEntry(dt, pos))
+            elif tokens[3] == '<  Move>':
+                from_pos = ast.literal_eval(f'{tokens[4]} {tokens[5]}')
+                to_pos = ast.literal_eval(f'{tokens[6]} {tokens[7]}')
+                result.append(MoveEntry(dt, from_pos, to_pos))
             elif tokens[3] == '< Nonce>':
                 nonce = int(tokens[4])
                 result.append(NonceEntry(dt, nonce))

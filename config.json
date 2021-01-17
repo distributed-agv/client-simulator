@@ -9,6 +9,10 @@
     "host": "127.0.0.1",
     "port": 6379
   },
+  "locator_addr": {
+    "host": "0.0.0.0",
+    "port": 8000
+  },
   "row_num": 5,
   "col_num": 5,
   "car_tasks": [
