@@ -52,6 +52,9 @@ if __name__ == '__main__':
             else:
                 annoations[frame[0]].set_color('black')
                 annoations[frame[0]].get_bbox_patch().set_edgecolor('black')
+        elif isinstance(frame[1], log_parser.MoveEntry):
+            annoations[frame[0]].set_x((frame[1].from_pos[1] + frame[1].to_pos[1]) / 2)
+            annoations[frame[0]].set_y((frame[1].from_pos[0] + frame[1].to_pos[0]) / 2)
         return annoations
 
     animation = ani.FuncAnimation(fig, update, frames=frames)
