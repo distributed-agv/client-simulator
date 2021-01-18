@@ -42,19 +42,21 @@ if __name__ == '__main__':
     ]
 
     def update(frame):
-        if isinstance(frame[1], log_parser.ArriveEntry):
-            annoations[frame[0]].set_x(frame[1].pos[1])
-            annoations[frame[0]].set_y(frame[1].pos[0])
-            if frame[1].pos == tuple(car_tasks[frame[0]]['src_pos']) or \
-                frame[1].pos == tuple(car_tasks[frame[0]]['dst_pos']):
-                annoations[frame[0]].set_color('red')
-                annoations[frame[0]].get_bbox_patch().set_edgecolor('red')
+        def update_position(car_id, pos):
+            annoations[car_id].set_x(pos[1])
+            annoations[car_id].set_y(pos[0])
+            if pos == tuple(car_tasks[car_id]['src_pos']) or pos == tuple(car_tasks[car_id]['dst_pos']):
+                annoations[car_id].set_color('red')
+                annoations[car_id].get_bbox_patch().set_edgecolor('red')
             else:
-                annoations[frame[0]].set_color('black')
-                annoations[frame[0]].get_bbox_patch().set_edgecolor('black')
+                annoations[car_id].set_color('black')
+                annoations[car_id].get_bbox_patch().set_edgecolor('black')
+
+        if isinstance(frame[1], log_parser.ArriveEntry):
+            update_position(frame[0], frame[1].pos)
         elif isinstance(frame[1], log_parser.MoveEntry):
-            annoations[frame[0]].set_x((frame[1].from_pos[1] + frame[1].to_pos[1]) / 2)
-            annoations[frame[0]].set_y((frame[1].from_pos[0] + frame[1].to_pos[0]) / 2)
+            pos = ((frame[1].from_pos[0] + frame[1].to_pos[0]) / 2, (frame[1].from_pos[1] + frame[1].to_pos[1]) / 2)
+            update_position(frame[0], pos)
         return annoations
 
     animation = ani.FuncAnimation(fig, update, frames=frames)
