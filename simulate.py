@@ -60,7 +60,12 @@ class ClientProcess(multiprocessing.Process):
             t_retry = self.t_retry_min
             while True:
                 try:
-                    return stub.GetNextStep(car_state)
+                    dt_begin = datetime.datetime.now()
+                    step = stub.GetNextStep(car_state)
+                    dt_end = datetime.datetime.now()
+                    latency = (dt_end - dt_begin).total_seconds() * 1000
+                    log(' Info', f'<Latency> {latency:.2f}')
+                    return step
                 except grpc.RpcError as err:
                     log('Error', err.details())
                     time.sleep(t_retry)
@@ -81,7 +86,7 @@ class ClientProcess(multiprocessing.Process):
                 dst_pos=make_position(self.dst_pos),
             )
 
-        log(' Info', f'<Arrive> {self.cur_pos}')
+        log(' Info', f'< Arrive> {self.cur_pos}')
         while True:
             car_state = make_car_state()
             step = get_next_step(car_state)
@@ -90,25 +95,25 @@ class ClientProcess(multiprocessing.Process):
                     time.sleep(self.t_recover)
                 else:
                     self.seq = step.step_code
-                log(' Info', f'< Nonce> {step.step_code}')
+                log(' Info', f'<  Nonce> {step.step_code}')
             elif step.step_code == guide_pb2.Step.StepCode.RESET:
                 self.seq = 0
                 self.last_pos = self.cur_pos
-                log(' Info', '< Reset>')
+                log(' Info', '<  Reset>')
             else:
                 offset = OFFSETS[step.step_code]
                 next_pos = (self.cur_pos[0] + offset[0], self.cur_pos[1] + offset[1])
                 if step.step_code == guide_pb2.Step.StepCode.STOP:
                     time.sleep(self.t_stop)
                 else:
-                    log(' Info', f'<  Move> {self.cur_pos} {next_pos}')
+                    log(' Info', f'<   Move> {self.cur_pos} {next_pos}')
                     self.car.move(step.step_code)
                 self.seq += 1
                 self.last_pos = self.cur_pos
                 self.cur_pos = next_pos
                 if self.cur_pos == self.dst_pos:
                     self.src_pos, self.dst_pos = self.dst_pos, self.src_pos                    
-                log(' Info', f'<Arrive> {self.cur_pos}')
+                log(' Info', f'< Arrive> {self.cur_pos}')
 
 
 if __name__ == '__main__':
