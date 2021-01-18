@@ -33,7 +33,7 @@ if __name__ == '__main__':
             bbox={
                 'boxstyle': 'circle',
                 'facecolor': 'white',
-                'edgecolor': 'red',
+                'edgecolor': 'green',
             },
             ha='center',
             va='center',
@@ -46,17 +46,23 @@ if __name__ == '__main__':
             annoations[car_id].set_x(pos[1])
             annoations[car_id].set_y(pos[0])
             if pos == tuple(car_tasks[car_id]['src_pos']) or pos == tuple(car_tasks[car_id]['dst_pos']):
-                annoations[car_id].set_color('red')
-                annoations[car_id].get_bbox_patch().set_edgecolor('red')
+                annoations[car_id].set_color('green')
+                annoations[car_id].get_bbox_patch().set_edgecolor('green')
             else:
                 annoations[car_id].set_color('black')
                 annoations[car_id].get_bbox_patch().set_edgecolor('black')
+
+        def mark_crash(car_id):
+            annoations[car_id].set_color('red')
+            annoations[car_id].get_bbox_patch().set_edgecolor('red')
 
         if isinstance(frame[1], log_parser.ArriveEntry):
             update_position(frame[0], frame[1].pos)
         elif isinstance(frame[1], log_parser.MoveEntry):
             pos = ((frame[1].from_pos[0] + frame[1].to_pos[0]) / 2, (frame[1].from_pos[1] + frame[1].to_pos[1]) / 2)
             update_position(frame[0], pos)
+        elif isinstance(frame[1], log_parser.CrashEntry):
+            mark_crash(frame[0])
         return annoations
 
     animation = ani.FuncAnimation(fig, update, frames=frames)

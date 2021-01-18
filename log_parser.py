@@ -43,6 +43,11 @@ class ResetEntry(InfoEntry):
         super(ResetEntry, self).__init__(dt)
 
 
+class CrashEntry(InfoEntry):
+    def __init__(self, dt):
+        super(CrashEntry, self).__init__(dt)
+
+
 class LatencyEntry(InfoEntry):
     def __init__(self, dt, latency):
         super(LatencyEntry, self).__init__(dt)
@@ -68,6 +73,8 @@ def parse_log(filename):
                 result.append(NonceEntry(dt, nonce))
             elif tokens[3] == '<  Reset>':
                 result.append(ResetEntry(dt))
+            elif tokens[3] == '<  Crash>':
+                result.append(CrashEntry(dt))
             elif tokens[3] == '<Latency>':
                 latency = float(tokens[4])
                 result.append(LatencyEntry(dt, latency))

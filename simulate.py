@@ -7,6 +7,7 @@ import multiprocessing
 import json
 import datetime
 import subprocess
+import signal
 
 OFFSETS = [(0, 0), (0, -1), (0, 1), (1, 0), (-1, 0)]
 
@@ -51,6 +52,12 @@ class ClientProcess(multiprocessing.Process):
         def log(msg_type, msg):
             log_file.write(f'[{msg_type}] {datetime.datetime.now()} {msg}\n')
             log_file.flush()
+
+        def sigterm_handler(signum, stack_frame):
+            log(' Info', '<  Crash>')
+            exit(0)
+
+        signal.signal(signal.SIGTERM, sigterm_handler)
 
         def get_next_step(car_state):
             server_addr = random.choice(self.server_addrs)
@@ -155,5 +162,5 @@ if __name__ == '__main__':
         print(f'Client {car_id}\'s PID: {client_process.pid}')
     time.sleep(duration)
     for client_process in client_processes:
-        client_process.terminate()
-    locator.terminate()
+        client_process.kill()
+    locator.kill()
