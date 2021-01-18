@@ -30,6 +30,7 @@ if __name__ == '__main__':
         ax.annotate(
             str(car_id),
             car_task['src_pos'][::-1],
+            color='green',
             bbox={
                 'boxstyle': 'circle',
                 'facecolor': 'white',
