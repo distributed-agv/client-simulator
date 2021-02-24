@@ -77,8 +77,8 @@ class ClientProcess(multiprocessing.Process):
                     latency = (dt_end - dt_begin).total_seconds() * 1000
                     log(' Info', '<Latency> {:.2f}'.format(latency))
                     return step_code
-                except grpc.RpcError as err:
-                    log('Error', err.details())
+                except RuntimeError as err:
+                    log('Error', str(err))
                     time.sleep(t_retry)
                 t_retry = min(t_retry * self.t_retry_mul, self.t_retry_max)
 
@@ -127,7 +127,7 @@ if __name__ == '__main__':
     col_num = config['col_num']
     redis_addr = config['redis_addr']
 
-    get_lock_script = open('get_lock.lua', 'r').read().encode('utf8')
+    get_lock_script = open('getLock.lua', 'r').read().encode('utf8')
     commit_script = open('commit.lua', 'r').read().encode('utf8')
     recover_script = open('recover.lua', 'r').read().encode('utf8')
     get_lock_sha = hashlib.sha1(get_lock_script).hexdigest()
@@ -170,5 +170,5 @@ if __name__ == '__main__':
         print('Client {}\'s PID: {}'.format(car_id, client_process.pid))
     time.sleep(duration)
     for client_process in client_processes:
-        client_process.kill()
-    locator.kill()
+        client_process.terminate()
+    locator.terminate()

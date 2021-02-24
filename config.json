@@ -1,7 +1,7 @@
 {
   "redis_addr": {
     "host": "127.0.0.1",
-    "port": 6379
+    "port": 6380
   },
   "locator_addr": {
     "host": "0.0.0.0",
@@ -26,5 +26,5 @@
   "t_retry_mul": 2,
   "t_stop": 1,
   "t_recover": 1,
-  "duration": 60
+  "duration": 10
 }

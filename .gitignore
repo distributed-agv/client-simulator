@@ -2,7 +2,5 @@ __pycache__/
 .vscode/
 logs/
 guidepy.so
-get_lock.lua
-commit.lua
-recover.lua
+*.lua
 car-locator/
