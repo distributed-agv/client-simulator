@@ -26,5 +26,5 @@
   "t_retry_mul": 2,
   "t_stop": 1,
   "t_recover": 1,
-  "duration": 10
+  "duration": 60
 }
